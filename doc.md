@@ -9,28 +9,30 @@
 - Add category
 
 ## User Api
+
 - File Upload to cloudinary
 - Image resizing
 - Authentication
 - Data Modeling
-- Limit number of requset per user
+- Limit number of request per user
 - Toggle like and dislike post Endpoint
 - User management
 - Block User
-- User prfile
+- User profile
 - User can view other profile
 - Update profile
 - Update password
-- Forgate Password
+- Forget Password
 - Sending email using sendgrid
-- Block a user
-- Account verfication
+- Account verification
 - Roles
 - Follow and unfollow users
-- User can view other profile
 - Who view my profile
 - Unhealthy words
 - Make post public or private
 - Make your profile private only for login users
 
+### Here we'll follow MVC architecture to build this application.
 
+1. Create Model
+2. 
