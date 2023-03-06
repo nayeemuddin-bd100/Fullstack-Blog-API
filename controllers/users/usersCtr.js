@@ -1,11 +1,12 @@
+require("dotenv").config();
 const User = require("../../model/user/User");
 const asyncHandler = require("express-async-handler");
 const generateToken = require("../../config/token/generateToken");
 const validateMongoDbId = require("../../utils/validateMongoDbId");
-const sgMail = require("@sendgrid/mail");
-// sgMail.setApiKey('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');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const crypto = require("crypto");
 
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 /*=============================================
 =                  Register            =
@@ -31,15 +32,11 @@ const userRegisterCtrl = asyncHandler(async (req, res) => {
   }
 });
 
-
-
-
 /*=============================================
 =            Login User            =
 =============================================*/
 const userLoginCtrl = asyncHandler(async (req, res) => {
-
-  const {email,password} = req.body
+  const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
     throw new Error(`User does not exist`);
@@ -47,64 +44,55 @@ const userLoginCtrl = asyncHandler(async (req, res) => {
   const passwordMatched = await user.isPasswordMatched(password);
 
   if (!passwordMatched) {
-    return res.json('Password not matched')
+    return res.json("Password not matched");
   }
 
   if (user && passwordMatched) {
     res.json({
-      _id:user?.id,
+      _id: user?.id,
       firstName: user?.firstName,
       lastName: user?.lastName,
       email: user?.email,
       profilePhoto: user?.profilePhoto,
-      token: generateToken(user?._id,user?.firstName)
+      token: generateToken(user?._id, user?.firstName),
     });
   }
-  
-
 });
 
 /*=====  End of Login User  ======*/
-
-
 
 /*=============================================
 =            Fetch All Users            =
 =============================================*/
 
 const fetchUsersCtrl = asyncHandler(async (req, res) => {
-  const users = await User.find({})
+  const users = await User.find({});
   try {
-    res.json(users)
+    res.json(users);
   } catch (error) {
-    res.json(error)
+    res.json(error);
   }
-})
+});
 
 /*=====  End of Fetch All Users  ======*/
-
-
-
 
 /*=============================================
 =            Delete User           =
 =============================================*/
 const deleteUserCtrl = asyncHandler(async (req, res) => {
-  const id = req.params.id
+  const id = req.params.id;
 
-  validateMongoDbId(id)
+  validateMongoDbId(id);
 
   try {
     const user = await User.deleteOne({ id });
-    res.json('User Deleted Successfully')
+    res.json("User Deleted Successfully");
   } catch (error) {
-    res.json('Error Deleting user');
+    res.json("Error Deleting user");
   }
-
-})
+});
 
 /*=====  End of Delete    ======*/
-
 
 /*=============================================
 =            User Details            =
@@ -123,81 +111,76 @@ const userDetailsCtrl = asyncHandler(async (req, res) => {
 
 /*=====  End of User Details  ======*/
 
-
-
 /*=============================================
 =            User profile            =
 =============================================*/
 
 const userProfileCtrl = asyncHandler(async (req, res) => {
-  const { id } = req.params
-  validateMongoDbId(id)
+  const { id } = req.params;
+  validateMongoDbId(id);
 
   try {
-    const user = await User.findById(id)
-    res.json(user)
+    const user = await User.findById(id);
+    res.json(user);
   } catch (error) {
     res.json(error);
   }
-})
+});
 
 /*=====  End of User profile  ======*/
-
-
 
 /*=============================================
 =            Update User            =
 =============================================*/
 const updateUserCtrl = asyncHandler(async (req, res) => {
-  const {_id} = req?.headers?.user
-  validateMongoDbId(_id)
+  const { _id } = req?.headers?.user;
+  validateMongoDbId(_id);
 
   try {
-    const updateUser = await User.findByIdAndUpdate(_id, {
-      firstName: req?.body?.firstName,
-      lastName: req?.body?.lastName,
-      email: req?.body?.email,
-      bio:req?.body?.bio,
-    }, {
-      new: true,
-      runValidators:true
-    })
+    const updateUser = await User.findByIdAndUpdate(
+      _id,
+      {
+        firstName: req?.body?.firstName,
+        lastName: req?.body?.lastName,
+        email: req?.body?.email,
+        bio: req?.body?.bio,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
-    res.json(updateUser)
+    res.json(updateUser);
   } catch (error) {
-    res.json(error)
+    res.json(error);
   }
-})
-
+});
 
 /*=====  End of Update User  ======*/
-
 
 /*=============================================
 =            Update Password            =
 =============================================*/
 
 const updatePasswordCtrl = asyncHandler(async (req, res) => {
-  const { id } = req?.headers?.user
-  const {password} = req?.body
-  validateMongoDbId(id)
+  const { id } = req?.headers?.user;
+  const { password } = req?.body;
+  validateMongoDbId(id);
 
-  const user = await User.findById(id)
+  const user = await User.findById(id);
 
   if (password) {
-    user.password = password
-    const updatedUser = await user.save()
+    user.password = password;
+    const updatedUser = await user.save();
 
-    res.json(updatedUser)
+    res.json(updatedUser);
   }
 
-  return res.json(user)
-
-
-})
+  return res.json(user);
+});
 
 /*=====  End of Update Password  ======*/
-
 
 /*=============================================
 =            Follow User             =
@@ -205,38 +188,36 @@ const updatePasswordCtrl = asyncHandler(async (req, res) => {
 
 const followUserCtrl = asyncHandler(async (req, res) => {
   const { followId } = req?.body;
- const { id:loginId } = req?.headers?.user;
+  const { id: loginId } = req?.headers?.user;
 
-  
- 
-//find the target user and check if the login id exist
-const targetUser = await User.findById(followId);
-const alreadyFollowing = targetUser?.followers?.find(
-  (user) => user?.toString() == loginId.toString()
-);
-  
+  //find the target user and check if the login id exist
+  const targetUser = await User.findById(followId);
+  const alreadyFollowing = targetUser?.followers?.find(
+    (user) => user?.toString() == loginId.toString()
+  );
+
   if (alreadyFollowing) throw new Error("You have already follow the user");
 
-  await User.findByIdAndUpdate(followId, {
-    $push: { followers: loginId },
-    isFollowing:true
-  },{new:true});
+  await User.findByIdAndUpdate(
+    followId,
+    {
+      $push: { followers: loginId },
+      isFollowing: true,
+    },
+    { new: true }
+  );
   await User.findByIdAndUpdate(
     loginId,
     {
       $push: { following: followId },
-
     },
     { new: true }
   );
 
-  res.json('You have successfully followed this user')
-
-})
+  res.json("You have successfully followed this user");
+});
 
 /*=====  End of Follow User   ======*/
-
-
 
 /*=============================================
 =            Unfollow User            =
@@ -268,17 +249,14 @@ const unfollowUserCtrl = asyncHandler(async (req, res) => {
 
 /*=====  End of Unfollow User  ======*/
 
-
-
-
 /*=============================================
 =            Block User            =
 =============================================*/
 const blockUserCtrl = asyncHandler(async (req, res) => {
-  const { id } = req?.params
-  validateMongoDbId(id)
+  const { id } = req?.params;
+  validateMongoDbId(id);
 
- try {
+  try {
     const user = await User.findByIdAndUpdate(
       id,
       {
@@ -288,23 +266,21 @@ const blockUserCtrl = asyncHandler(async (req, res) => {
     );
 
     res.json(user);
- } catch (error) {
-   res.json(error)
- }
-
-})
+  } catch (error) {
+    res.json(error);
+  }
+});
 
 /*=====  End of Block User  ======*/
-
 
 /*=============================================
 =            Block User            =
 =============================================*/
 const unBlockUserCtrl = asyncHandler(async (req, res) => {
-  const { id } = req?.params
-  validateMongoDbId(id)
+  const { id } = req?.params;
+  validateMongoDbId(id);
 
- try {
+  try {
     const user = await User.findByIdAndUpdate(
       id,
       {
@@ -314,48 +290,70 @@ const unBlockUserCtrl = asyncHandler(async (req, res) => {
     );
 
     res.json(user);
- } catch (error) {
-   res.json(error)
- }
-
-})
+  } catch (error) {
+    res.json(error);
+  }
+});
 
 /*=====  End of Block User  ======*/
 
-
-
 /*=============================================
-=        Email sending - sendgird            =
+=   Generate email verification Token     =
 =============================================*/
 const generateVerificationTokenCtrl = asyncHandler(async (req, res) => {
-  const loginUserId = req?.headers?.user?.id
-  const user = await User.findById(loginUserId)
-
-
-
+  const loginUserId = req?.headers?.user?.id;
+  const user = await User.findById(loginUserId);
 
   try {
+    const accountVerificationToken =
+      await user.createAccountVerificationToken();
+    await user.save();
 
-    const accountVerificationToken = await user.createAccountVerificationToken();
-    await user.save()
-  console.log(accountVerificationToken);
-
-    const restUrl = `Please verify your account, The link will be expired after 10 minutes <br/> </br> <a href="http://localhost:3000/verify-account/${accountVerificationToken}"> Verify your account</a>>  `;
+    const restUrl = `<strong>Please verify your account, The link will be expired after 10 minutes <br/> </br> <a href="http://localhost:3000/verify-account/${accountVerificationToken}"> Click Here </a>  </strong> `;
     const msg = {
       to: "ctgnayeem0@gmail.com",
       from: "ctgnayeem0@gmail.com", // Use the email address or domain you verified above
       subject: "Verify user account of full stack Blog App",
-      html: restUrl
-    }
+      html: restUrl,
+    };
 
     await sgMail.send(msg);
-    res.json('Email Sent')
+    res.json(restUrl);
   } catch (error) {
-    res.json(error)
+    res.json(error);
   }
+});
+
+/*=====  End of Generate email verification Token ======*/
+
+
+/*=============================================
+=            Account verification            =
+=============================================*/
+
+const accountVerificationCtrl = asyncHandler(async (req, res) => {
+  const { token } = req?.body
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+
+  // find user by token
+  const user = await User.findOne({
+    accountVerificationToken: hashedToken,
+    accountVerificationTokenExpires: { $gt: new Date() },
+  });
+  
+  if (!user) {
+    throw new Error('Token has been expired')
+  }
+
+  user.isAccountVerified = true;
+  user.accountVerificationToken = undefined;
+  user.accountVerificationTokenExpires = undefined;
+  await user.save()
+
+  res.json(user)
 })
 
-/*=====  End of Email sending - sendgird  ======*/
+/*=====  End of Account verification  ======*/
 
 
 
@@ -375,4 +373,5 @@ module.exports = {
   blockUserCtrl,
   unBlockUserCtrl,
   generateVerificationTokenCtrl,
+  accountVerificationCtrl,
 };

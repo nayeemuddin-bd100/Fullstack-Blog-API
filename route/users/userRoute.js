@@ -13,6 +13,7 @@ const {
   blockUserCtrl,
   unBlockUserCtrl,
   generateVerificationTokenCtrl,
+  accountVerificationCtrl,
 } = require("../../controllers/users/usersCtr");
 const authMiddleware = require('../../middlewares/auth/authMiddleware');
 const userRoutes = express.Router();
@@ -23,6 +24,11 @@ const userRoutes = express.Router();
 userRoutes.post('/register', userRegisterCtrl)
 userRoutes.post('/login', userLoginCtrl)
 userRoutes.post("/generate-verify-email-token",authMiddleware, generateVerificationTokenCtrl);
+userRoutes.put(
+  "/verify-account",
+  authMiddleware,
+  accountVerificationCtrl
+);
 userRoutes.get('/',authMiddleware, fetchUsersCtrl)
 userRoutes.delete("/:id", deleteUserCtrl);
 userRoutes.get("/:id", userDetailsCtrl);
