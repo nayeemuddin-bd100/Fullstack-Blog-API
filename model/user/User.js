@@ -147,6 +147,17 @@ userSchema.methods.createAccountVerificationToken = async function () {
   
 };
 
+
+// Forget password token
+userSchema.methods.forgetPasswordToken = async function () {
+  const verificationToken = crypto.randomBytes(32).toString('hex')
+
+  this.passwordResetToken = crypto.createHash("sha256").update(verificationToken).digest('hex');
+  this.passwordResetExpires = Date.now() + 30 * 60 * 1000 //10 minutes
+
+  return verificationToken;
+}
+
 // compile schema into model=
 const User = mongoose.model("User", userSchema);
 

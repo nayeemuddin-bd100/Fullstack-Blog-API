@@ -14,6 +14,8 @@ const {
   unBlockUserCtrl,
   generateVerificationTokenCtrl,
   accountVerificationCtrl,
+  forgetPasswordTokenCtrl,
+  restPasswordCtrl,
 } = require("../../controllers/users/usersCtr");
 const authMiddleware = require('../../middlewares/auth/authMiddleware');
 const userRoutes = express.Router();
@@ -34,6 +36,8 @@ userRoutes.delete("/:id", deleteUserCtrl);
 userRoutes.get("/:id", userDetailsCtrl);
 userRoutes.get("/profile/:id", authMiddleware, userProfileCtrl);
 userRoutes.put("/updatePassword/:id", authMiddleware, updatePasswordCtrl);
+userRoutes.put("/forget-password-token", authMiddleware,forgetPasswordTokenCtrl);
+userRoutes.put("/reset-password", restPasswordCtrl);
 userRoutes.put("/follow", authMiddleware, followUserCtrl);
 userRoutes.put("/unfollow", authMiddleware, unfollowUserCtrl);
 userRoutes.put("/block-user/:id", authMiddleware, blockUserCtrl);

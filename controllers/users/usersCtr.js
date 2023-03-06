@@ -356,6 +356,74 @@ const accountVerificationCtrl = asyncHandler(async (req, res) => {
 /*=====  End of Account verification  ======*/
 
 
+/*=============================================
+=     Generate Forget Password Token        =
+=============================================*/
+
+const forgetPasswordTokenCtrl = asyncHandler(async (req, res) => {
+  const { email } = req?.body
+  const user = await User.findOne({ email })
+  
+  try {
+    const accountVerificationToken = await user.forgetPasswordToken();
+    await user.save();
+
+
+   const restUrl = `<strong> To reset your password , please verify your account first. The link will be expired after 10 minutes <br/> </br> <a href="http://localhost:3000/verify-account/${accountVerificationToken}"> Click Here </a>  </strong> `;
+  
+    
+    const msg = {
+     to: email,
+     from: "ctgnayeem0@gmail.com", // Use the email address or domain you verified above
+     subject: "Verify user account of full stack Blog App",
+     html: restUrl,
+   };
+
+   await sgMail.send(msg);
+   res.json(
+     `Please check your email address . A verification message is successfully sent your email address. your token is ${accountVerificationToken}`
+   );
+  } catch (error) {
+    res.json(error)
+  }
+
+
+  res.json(user)
+})
+
+/*=====  End of Forget Password Token  ======*/
+
+
+
+/*=============================================
+=            Reset and update Password            =
+=============================================*/
+
+const restPasswordCtrl = asyncHandler(async (req, res) => {
+  const { token, password } = req?.body;
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires:{ $gt: new Date() }
+  });
+
+    if (!user) {
+      throw new Error("Token has been expired");
+    }
+
+  user.password = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+
+  res.json('Password Change Successfully')
+
+})
+
+/*=====  End of Reset and update Password  ======*/
+
+
 
 
 
@@ -374,4 +442,6 @@ module.exports = {
   unBlockUserCtrl,
   generateVerificationTokenCtrl,
   accountVerificationCtrl,
+  forgetPasswordTokenCtrl,
+  restPasswordCtrl,
 };
