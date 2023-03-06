@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: [true, "Password is required"],
+      required: [true, "Email is required"],
     },
     bio: {
       type: String,
@@ -112,6 +112,11 @@ const userSchema = new mongoose.Schema(
 
 // Hash password by bcryptjs
 userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    next()
+  }
+
+
   const salt = await bcrypt.genSaltSync(10);
   const hash = await bcrypt.hashSync(this.password, salt);
 
@@ -120,8 +125,21 @@ userSchema.pre('save', async function (next) {
   next()
 })
 
-// compile schema into model
 
+// Custom method to match password
+userSchema.methods.isPasswordMatched = async function (enteredPassword) {
+  
+  const isMatch = await bcrypt.compare(enteredPassword, this.password)
+   if (!isMatch) {
+     throw new Error("Password not matched");
+   }
+   return true;
+}
+
+
+
+
+// compile schema into model=
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
