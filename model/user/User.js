@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 //create Schema
 
@@ -108,51 +109,54 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-
-
 // Hash password by bcryptjs
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
-    next()
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    next();
   }
-
 
   const salt = await bcrypt.genSaltSync(10);
   const hash = await bcrypt.hashSync(this.password, salt);
 
   this.password = hash;
 
-  next()
-})
-
+  next();
+});
 
 // Custom method to match password
 userSchema.methods.isPasswordMatched = async function (enteredPassword) {
+  const isMatch = await bcrypt.compare(enteredPassword, this.password);
+  if (!isMatch) {
+    throw new Error("Password not matched");
+  }
+  return true;
+};
+
+// verify account
+userSchema.methods.createAccountVerificationToken = async function () {
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+
+  this.accountVerificationToken = crypto
+    .createHash("sha256")
+    .update(verificationToken)
+    .digest("hex");
   
-  const isMatch = await bcrypt.compare(enteredPassword, this.password)
-   if (!isMatch) {
-     throw new Error("Password not matched");
-   }
-   return true;
-}
+  this.accountVerificationTokenExpires = Date.now() + 30 * 60 * 1000 //10 minutes
 
-
-
+  return verificationToken; 
+  
+};
 
 // compile schema into model=
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
 
-
-
-
 /**
  *
- * There are two types of mongoose hooks, such as : pre and post 
- * 
- * pre- pre is called before saved data in database 
+ * There are two types of mongoose hooks, such as : pre and post
+ *
+ * pre- pre is called before saved data in database
  * post - post is called after saved data.
  *
  */
-

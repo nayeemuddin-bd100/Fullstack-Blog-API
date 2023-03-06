@@ -3,7 +3,8 @@ const asyncHandler = require("express-async-handler");
 const generateToken = require("../../config/token/generateToken");
 const validateMongoDbId = require("../../utils/validateMongoDbId");
 const sgMail = require("@sendgrid/mail");
-sgMail.setApiKey('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');
+// sgMail.setApiKey('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');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
 /*=============================================
@@ -327,13 +328,24 @@ const unBlockUserCtrl = asyncHandler(async (req, res) => {
 =        Email sending - sendgird            =
 =============================================*/
 const generateVerificationTokenCtrl = asyncHandler(async (req, res) => {
+  const loginUserId = req?.headers?.user?.id
+  const user = await User.findById(loginUserId)
+
+
+
 
   try {
+
+    const accountVerificationToken = await user.createAccountVerificationToken();
+    await user.save()
+  console.log(accountVerificationToken);
+
+    const restUrl = `Please verify your account, The link will be expired after 10 minutes <br/> </br> <a href="http://localhost:3000/verify-account/${accountVerificationToken}"> Verify your account</a>>  `;
     const msg = {
       to: "ctgnayeem0@gmail.com",
       from: "ctgnayeem0@gmail.com", // Use the email address or domain you verified above
-      subject: "Sending with Twilio SendGrid is Fun",
-      text: "and easy to do anywhere, even with Node.js",
+      subject: "Verify user account of full stack Blog App",
+      html: restUrl
     }
 
     await sgMail.send(msg);
