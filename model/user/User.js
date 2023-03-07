@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 
-//create Schema
+//User Schema
 
 const userSchema = new mongoose.Schema(
   {
@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, "Email is required"],
+
     },
     bio: {
       type: String,

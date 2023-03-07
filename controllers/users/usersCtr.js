@@ -6,6 +6,7 @@ const validateMongoDbId = require("../../utils/validateMongoDbId");
 const crypto = require("crypto");
 
 const sgMail = require("@sendgrid/mail");
+const cloudinaryUpload = require("../../utils/cloudinary");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 /*=============================================
@@ -59,7 +60,6 @@ const userLoginCtrl = asyncHandler(async (req, res) => {
   }
 });
 
-/*=====  End of Login User  ======*/
 
 /*=============================================
 =            Fetch All Users            =
@@ -74,7 +74,6 @@ const fetchUsersCtrl = asyncHandler(async (req, res) => {
   }
 });
 
-/*=====  End of Fetch All Users  ======*/
 
 /*=============================================
 =            Delete User           =
@@ -92,7 +91,6 @@ const deleteUserCtrl = asyncHandler(async (req, res) => {
   }
 });
 
-/*=====  End of Delete    ======*/
 
 /*=============================================
 =            User Details            =
@@ -109,7 +107,6 @@ const userDetailsCtrl = asyncHandler(async (req, res) => {
   }
 });
 
-/*=====  End of User Details  ======*/
 
 /*=============================================
 =            User profile            =
@@ -127,7 +124,6 @@ const userProfileCtrl = asyncHandler(async (req, res) => {
   }
 });
 
-/*=====  End of User profile  ======*/
 
 /*=============================================
 =            Update User            =
@@ -157,7 +153,6 @@ const updateUserCtrl = asyncHandler(async (req, res) => {
   }
 });
 
-/*=====  End of Update User  ======*/
 
 /*=============================================
 =            Update Password            =
@@ -180,7 +175,6 @@ const updatePasswordCtrl = asyncHandler(async (req, res) => {
   return res.json(user);
 });
 
-/*=====  End of Update Password  ======*/
 
 /*=============================================
 =            Follow User             =
@@ -217,7 +211,6 @@ const followUserCtrl = asyncHandler(async (req, res) => {
   res.json("You have successfully followed this user");
 });
 
-/*=====  End of Follow User   ======*/
 
 /*=============================================
 =            Unfollow User            =
@@ -247,8 +240,6 @@ const unfollowUserCtrl = asyncHandler(async (req, res) => {
   res.json("You have successfully unfollowed this user");
 });
 
-/*=====  End of Unfollow User  ======*/
-
 /*=============================================
 =            Block User            =
 =============================================*/
@@ -271,10 +262,9 @@ const blockUserCtrl = asyncHandler(async (req, res) => {
   }
 });
 
-/*=====  End of Block User  ======*/
 
 /*=============================================
-=            Block User            =
+=           Unblock User            =
 =============================================*/
 const unBlockUserCtrl = asyncHandler(async (req, res) => {
   const { id } = req?.params;
@@ -294,8 +284,6 @@ const unBlockUserCtrl = asyncHandler(async (req, res) => {
     res.json(error);
   }
 });
-
-/*=====  End of Block User  ======*/
 
 /*=============================================
 =   Generate email verification Token     =
@@ -324,8 +312,6 @@ const generateVerificationTokenCtrl = asyncHandler(async (req, res) => {
   }
 });
 
-/*=====  End of Generate email verification Token ======*/
-
 
 /*=============================================
 =            Account verification            =
@@ -352,8 +338,6 @@ const accountVerificationCtrl = asyncHandler(async (req, res) => {
 
   res.json(user)
 })
-
-/*=====  End of Account verification  ======*/
 
 
 /*=============================================
@@ -391,8 +375,6 @@ const forgetPasswordTokenCtrl = asyncHandler(async (req, res) => {
   res.json(user)
 })
 
-/*=====  End of Forget Password Token  ======*/
-
 
 
 /*=============================================
@@ -421,9 +403,29 @@ const restPasswordCtrl = asyncHandler(async (req, res) => {
 
 })
 
-/*=====  End of Reset and update Password  ======*/
 
 
+/*=============================================
+=            Profile photo Upload            =
+=============================================*/
+const profilePhotoUploadCtrl = asyncHandler(async (req, res) => {
+  const _id = req?.headers?.user?.id
+  
+
+try {
+    const localPath = `public/images/profile/${req.file.filename}`;
+    const imgUpload = await cloudinaryUpload(localPath);
+  
+  const uploadPhoto = await User.findByIdAndUpdate(_id, {
+    profilePhoto: imgUpload,
+  },{new :true});
+
+    res.json(uploadPhoto);
+} catch (error) {
+  res.json(error)
+}
+  
+})
 
 
 
@@ -444,4 +446,5 @@ module.exports = {
   accountVerificationCtrl,
   forgetPasswordTokenCtrl,
   restPasswordCtrl,
+  profilePhotoUploadCtrl,
 };

@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const {
   userRegisterCtrl,
   userLoginCtrl,
@@ -16,33 +16,67 @@ const {
   accountVerificationCtrl,
   forgetPasswordTokenCtrl,
   restPasswordCtrl,
+  profilePhotoUploadCtrl,
 } = require("../../controllers/users/usersCtr");
-const authMiddleware = require('../../middlewares/auth/authMiddleware');
+const authMiddleware = require("../../middlewares/auth/authMiddleware");
+const {
+  profilePhotoUpload,
+  profilePhotoResize,
+} = require("../../middlewares/uploads/profilePhotoUpload");
 const userRoutes = express.Router();
 
 
+/*=====  User authentication  ======*/
 
-
-userRoutes.post('/register', userRegisterCtrl)
-userRoutes.post('/login', userLoginCtrl)
-userRoutes.post("/generate-verify-email-token",authMiddleware, generateVerificationTokenCtrl);
-userRoutes.put(
-  "/verify-account",
+userRoutes.post("/register", userRegisterCtrl);
+userRoutes.post("/login", userLoginCtrl);
+userRoutes.post(
+  "/generate-verify-email-token",
   authMiddleware,
-  accountVerificationCtrl
+  generateVerificationTokenCtrl
 );
-userRoutes.get('/',authMiddleware, fetchUsersCtrl)
+userRoutes.put("/verify-account", authMiddleware, accountVerificationCtrl);
+
+/*=====  User Account Management ======*/
+
+userRoutes.get("/", authMiddleware, fetchUsersCtrl);
 userRoutes.delete("/:id", deleteUserCtrl);
 userRoutes.get("/:id", userDetailsCtrl);
 userRoutes.get("/profile/:id", authMiddleware, userProfileCtrl);
+userRoutes.put("/update-user-info/:id", authMiddleware, updateUserCtrl);
+
+
+/*=====  password Management  ======*/
+
 userRoutes.put("/updatePassword/:id", authMiddleware, updatePasswordCtrl);
-userRoutes.put("/forget-password-token", authMiddleware,forgetPasswordTokenCtrl);
+userRoutes.put(
+  "/forget-password-token",
+  authMiddleware,
+  forgetPasswordTokenCtrl
+);
 userRoutes.put("/reset-password", restPasswordCtrl);
+
+
+/*=====  Follow/unfollow  ======*/
 userRoutes.put("/follow", authMiddleware, followUserCtrl);
 userRoutes.put("/unfollow", authMiddleware, unfollowUserCtrl);
+
+/*=====  Block/Unblock user  ======*/
 userRoutes.put("/block-user/:id", authMiddleware, blockUserCtrl);
 userRoutes.put("/unblock-user/:id", authMiddleware, unBlockUserCtrl);
-userRoutes.put("/:id", authMiddleware, updateUserCtrl);
+
+
+
+/*=====  Profile photo Upload  ======*/
+
+
+userRoutes.put(
+  "/profile-photo-upload",
+  authMiddleware,
+  profilePhotoUpload,
+  profilePhotoResize,
+  profilePhotoUploadCtrl
+);
 
 
 
