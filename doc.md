@@ -1,6 +1,6 @@
 ## Api endpoint
 
-- Delete, update, crete, reade
+- Delete, update, crete, read
 - File Upload
 - Like , Dislike
 - Number of views
