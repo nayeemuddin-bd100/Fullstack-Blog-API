@@ -3,7 +3,7 @@ const sharp = require("sharp")
 const path = require("path")
 
 
-// Here we are using memorystorage instade of diskstorage since we stored in memory as buffer , it would be helpful for our performance.
+// Here we are using memorystorage instead of diskstorage since we stored in memory as buffer , it would be helpful for our performance.
 const multerStorage = multer.memoryStorage()
 
 // file type checking
