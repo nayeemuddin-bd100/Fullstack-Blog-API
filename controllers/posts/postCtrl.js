@@ -1,20 +1,32 @@
+const fs = require("fs");
 const expressAsyncHandler = require("express-async-handler");
 const Post = require("../../model/post/Post");
-const validateMongoDbId = require("../../utils/validateMongoDbId")
+const cloudinaryUpload = require("../../utils/cloudinary");
+const validateMongoDbId = require("../../utils/validateMongoDbId");
 
+const createPostCtrl = expressAsyncHandler(async (req, res) => {
+	const { filename } = req.file;
+	const localPath = `public/images/posts/${filename}`;
+	const imgUpload = await cloudinaryUpload(localPath);
 
-const createPostCtrl = expressAsyncHandler(async (req,res) => {
+	const { _id } = req.headers.user;
+	validateMongoDbId(_id);
 
-    const {_id} = req.headers.user
-    validateMongoDbId(_id)
-    try {
-        const post = await Post.create({...req.body, author : _id});
-        res.json(post)
-    } catch (error) {
-        res.json(error);
-    }
-})
+	try {
+		const post = await Post.create({
+			...req.body,
+			author: _id,
+			image: imgUpload,
+		});
+		res.json(post);
+
+		// Delete the temporarily saved image file from the server after uploading it to Cloudinary
+		fs.unlinkSync(localPath);
+	} catch (error) {
+		res.json(error);
+	}
+});
 
 module.exports = {
-    createPostCtrl
-}
+	createPostCtrl,
+};
