@@ -2,6 +2,7 @@ const express = require('express')
 const dbConnect = require('./config/db/dbConnect')
 const { userRegisterCtrl, userLoginCtrl } = require('./controllers/users/usersCtr')
 const { errorHandler, notFound } = require('./middlewares/error/errorHandler')
+const postRoute = require('./route/posts/postRoute')
 const userRoutes = require('./route/users/userRoute')
 
 require('dotenv').config()
@@ -21,6 +22,9 @@ app.use(express.json())
 
 // User Route
 app.use("/api/users", userRoutes);
+
+// Post Route
+app.use("/api/posts", postRoute);
 
 // Login User
 // app.post('/api/users/', userLoginCtrl) 
