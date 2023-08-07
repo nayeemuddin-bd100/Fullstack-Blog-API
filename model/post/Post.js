@@ -40,7 +40,7 @@ const postSchema = new mongoose.Schema(
 		author: {
 			type: String,
 			ref: "User",
-			require: [true, "Author is required"],
+			required: [true, "Author is required"],
 		},
 		description: {
 			type: String,
