@@ -1,4 +1,5 @@
 require("dotenv").config();
+const fs = require("fs");
 const User = require("../../model/user/User");
 const asyncHandler = require("express-async-handler");
 const generateToken = require("../../config/token/generateToken");
@@ -413,14 +414,21 @@ const profilePhotoUploadCtrl = asyncHandler(async (req, res) => {
   
 
 try {
-    const localPath = `public/images/profile/${req.file.filename}`;
-    const imgUpload = await cloudinaryUpload(localPath);
-  
-  const uploadPhoto = await User.findByIdAndUpdate(_id, {
-    profilePhoto: imgUpload,
-  },{new :true});
+	const localPath = `public/images/profile/${req.file.filename}`;
+	const imgUpload = await cloudinaryUpload(localPath);
 
-    res.json(uploadPhoto);
+	const uploadPhoto = await User.findByIdAndUpdate(
+		_id,
+		{
+			profilePhoto: imgUpload,
+		},
+		{ new: true }
+	);
+
+	res.json(uploadPhoto);
+
+	// Delete the temporarily saved image file from the server after uploading it to Cloudinary
+	fs.unlinkSync(localPath);
 } catch (error) {
   res.json(error)
 }
