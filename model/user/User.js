@@ -32,6 +32,14 @@ const userSchema = new mongoose.Schema(
       required: [true, "Password is required"],
     },
 
+    posts: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref:  "Post"
+        }
+      ]
+    },
     postCount: {
       type: Number,
       default: 0,
