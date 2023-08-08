@@ -5,7 +5,6 @@ const asyncHandler = require("express-async-handler");
 const generateToken = require("../../config/token/generateToken");
 const validateMongoDbId = require("../../utils/validateMongoDbId");
 const crypto = require("crypto");
-
 const sgMail = require("@sendgrid/mail");
 const cloudinaryUpload = require("../../utils/cloudinary");
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -118,7 +117,7 @@ const userProfileCtrl = asyncHandler(async (req, res) => {
   validateMongoDbId(id);
 
   try {
-    const user = await User.findById(id);
+    const user = await User.findById(id).populate('posts');
     res.json(user);
   } catch (error) {
     res.json(error);
