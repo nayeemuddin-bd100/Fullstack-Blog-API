@@ -4,6 +4,11 @@ const Post = require("../../model/post/Post");
 const cloudinaryUpload = require("../../utils/cloudinary");
 const validateMongoDbId = require("../../utils/validateMongoDbId");
 
+
+
+/*=============================================
+=              Create Post API          =
+=============================================*/
 const createPostCtrl = expressAsyncHandler(async (req, res) => {
 	const { filename } = req.file;
 	const localPath = `public/images/posts/${filename}`;
@@ -27,6 +32,25 @@ const createPostCtrl = expressAsyncHandler(async (req, res) => {
 	}
 });
 
+
+
+
+/*=============================================
+=           Fetch All Post            =
+=============================================*/
+
+const fetchPostsCtrl = expressAsyncHandler(async(req, res) => {
+	try {
+		const post = await Post.find({}).populate("author");
+		res.json(post);
+	} catch (error) {
+		res.json(error);
+	}
+
+})
+
+
 module.exports = {
 	createPostCtrl,
+	fetchPostsCtrl,
 };
