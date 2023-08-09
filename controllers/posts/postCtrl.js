@@ -80,8 +80,47 @@ const fetchSinglePostCtrl = expressAsyncHandler(async (req, res) => {
 		res.json(error);
 	}
 })
+
+/*=============================================
+=              Update Post          =
+=============================================*/
+const updatePostCtrl = expressAsyncHandler(async (req, res) => {
+	const postId = req.params.postId
+		validateMongoDbId(postId);
+
+	try {
+		const post = await Post.findByIdAndUpdate(postId,
+			{
+				...req.body,
+			},
+			{ new : true})
+		res.json(post);	
+	} catch (error) {
+		res.json(error);
+	}
+})
+
+
+/*=============================================
+=    		Delete Post        =
+=============================================*/
+const deletePostCtrl = expressAsyncHandler(async (req, res) => {
+	const postId = req.params.postId
+	validateMongoDbId(postId)
+
+	try {
+		await Post.findByIdAndDelete(postId)
+		res.json('Post deleted successfully')
+	} catch (error) {
+		res.json(error);
+	}
+})
+
+
 module.exports = {
 	createPostCtrl,
 	fetchPostsCtrl,
 	fetchSinglePostCtrl,
+	updatePostCtrl,
+	deletePostCtrl,
 };
