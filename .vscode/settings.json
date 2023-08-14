@@ -3,6 +3,7 @@
         "diskstorage",
         "memorystorage",
         "middlewares",
-        "unfollow"
+        "unfollow",
+        "virtuals"
     ]
 }
