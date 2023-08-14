@@ -5,6 +5,8 @@ const {
 	fetchSinglePostCtrl,
 	updatePostCtrl,
 	deletePostCtrl,
+	likePostctrl,
+	disLikePostctrl,
 } = require("../../controllers/posts/postCtrl");
 const authMiddleware = require("../../middlewares/auth/authMiddleware");
 const {  photoUpload, postsImgResize } = require("../../middlewares/uploads/photoUpload");
@@ -25,5 +27,9 @@ postRoute.put("/:postId", authMiddleware, updatePostCtrl);
 
 // Delete Post
 postRoute.delete("/:postId", authMiddleware, deletePostCtrl);
+// Like Post
+postRoute.put("/like/:postId", authMiddleware, likePostctrl);
+// disLike Post
+postRoute.put("/dislike/:postId", authMiddleware, disLikePostctrl);
 
 module.exports = postRoute;
