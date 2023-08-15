@@ -4,6 +4,7 @@ const { userRegisterCtrl, userLoginCtrl } = require('./controllers/users/usersCt
 const { errorHandler, notFound } = require('./middlewares/error/errorHandler')
 const commentRoute = require('./route/comments/commentRoute')
 const postRoute = require('./route/posts/postRoute')
+const sendEmailRoute = require('./route/sendEmail/sendEmailRoute')
 const userRoutes = require('./route/users/userRoute')
 
 require('dotenv').config()
@@ -28,7 +29,10 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoute);
 
 //Comment Route
-app.use('/api/comments',commentRoute)
+app.use('/api/comments', commentRoute)
+
+//sendEmail Route
+app.use('/api/sendEmail',sendEmailRoute)
 
 // Fetch all user
 app.get('/api/users', (req, res) => {
