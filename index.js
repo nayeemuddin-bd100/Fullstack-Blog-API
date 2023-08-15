@@ -2,6 +2,7 @@ const express = require('express')
 const dbConnect = require('./config/db/dbConnect')
 const { userRegisterCtrl, userLoginCtrl } = require('./controllers/users/usersCtr')
 const { errorHandler, notFound } = require('./middlewares/error/errorHandler')
+const categoryRoute = require('./route/category/categoryRoute')
 const commentRoute = require('./route/comments/commentRoute')
 const postRoute = require('./route/posts/postRoute')
 const sendEmailRoute = require('./route/sendEmail/sendEmailRoute')
@@ -33,6 +34,9 @@ app.use('/api/comments', commentRoute)
 
 //sendEmail Route
 app.use('/api/sendEmail',sendEmailRoute)
+
+//category Route
+app.use('/api/category',categoryRoute)
 
 // Fetch all user
 app.get('/api/users', (req, res) => {
