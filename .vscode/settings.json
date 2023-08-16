@@ -5,5 +5,6 @@
         "middlewares",
         "unfollow",
         "virtuals"
-    ]
+    ],
+    "editor.snippetSuggestions": "top"
 }
