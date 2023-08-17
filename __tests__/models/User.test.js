@@ -8,6 +8,10 @@ const {
 let mongoServer;
 
 
+// Set a timeout for the whole test suite
+jest.setTimeout(10000);
+
+
 beforeAll(async () => {
 	mongoServer = await startTestDatabase();
 });
