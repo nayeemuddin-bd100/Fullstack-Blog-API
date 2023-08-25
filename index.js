@@ -60,6 +60,9 @@ if (process.env.NODE_ENV == "test") {
 }
 
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log('server listening on port ' + PORT);
 })
+
+
+module.exports = server;

@@ -3,15 +3,13 @@ const Category = require("../../model/category/Category");
 const User = require("../../model/user/User");
 // const { connectTestMongoDb, disconnectTestMongoDb } = require("../../utils/test-mongodb-setup");
 const request = require("supertest");
-const app = require("../../index");
+const app = require("../../index.js");
 const {
 	startTestDatabase,
 	stopTestDatabase,
 } = require("../../utils/test-db-setup-ctrl");
 
 jest.useRealTimers();
-
-
 
 let mongoServer;
 
@@ -22,8 +20,14 @@ beforeEach(async () => {
 afterEach(async () => {
 	await stopTestDatabase(mongoServer);
 });
-it('should blah blah', async() => {
-   // test code...
-   
-})
 
+describe("Post controller", () => {
+	describe("Get- /api/posts", () => {
+		it("should return all Post", async () => {
+			// const res = await request(app).get("/api/posts");
+	
+			// expect(res).toBeDefined();
+			
+		});
+	});
+});
