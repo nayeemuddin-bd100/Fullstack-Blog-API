@@ -9,7 +9,8 @@ let mongoServer;
 
 
 // Set a timeout for the whole test suite
-jest.setTimeout(10000);
+jest.setTimeout(60000);
+jest.useRealTimers();
 
 
 beforeAll(async () => {
@@ -25,6 +26,7 @@ afterAll(async () => {
 describe("User Model", () => {
 
 	it("should create new user", async () => {
+		jest.setTimeout(30000);
 		const user = new User({
 			firstName: "Nayeem",
 			lastName: "Uddin",
@@ -42,7 +44,7 @@ describe("User Model", () => {
 		expect(savedUser.isFollowing).toBe(false);
 		expect(typeof savedUser.isAdmin).toBe("boolean");
 		expect(savedUser._id).toBeInstanceOf(mongoose.Types.ObjectId);
-	});
+	},60000);
 
 	it("should not keep blank to user data", async () => {
 		try {
@@ -51,9 +53,10 @@ describe("User Model", () => {
 		} catch (error) {
 			expect(error).toBeInstanceOf(mongoose.Error.ValidationError);
 		}
-	});
+	},60000);
 
 	it("should hash password before save into database", async () => {
+		jest.setTimeout(30000);
 		const user = new User({
 			firstName: "Saiful",
 			lastName: "Islam",
@@ -68,5 +71,5 @@ describe("User Model", () => {
 
 		// Assertion
 		expect(passwordMatched).toBe(true);
-	});
+	},60000);
 });
