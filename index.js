@@ -54,8 +54,12 @@ app.use(notFound)
 app.use(errorHandler)
 
 // Server
-const PORT = process.env.DB_PORT ||5000
+let PORT = process.env.DB_PORT || 5000
+if (process.env.NODE_ENV == "test") {
+	PORT = Math.floor(Math.random() * 60000) + 5000;
+}
+
+
 app.listen(PORT, () => {
     console.log('server listening on port ' + PORT);
 })
-
