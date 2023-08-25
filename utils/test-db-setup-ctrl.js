@@ -7,7 +7,7 @@ const startTestDatabase = async () => {
 
 	// this line not working for mongodb memory server
 	// await mongoose.createConnection(mongoUri, {
-	await mongoose.connect(mongoUri, {
+	await mongoose.createConnection(mongoUri, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 	});
