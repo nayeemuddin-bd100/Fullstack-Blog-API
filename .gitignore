@@ -4,4 +4,5 @@ node_modules
 .env.local
 .env.staging
 r&d.txt
+r&d
 coverage
