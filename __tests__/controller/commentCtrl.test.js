@@ -14,11 +14,11 @@ jest.useRealTimers();
 
 let mongoServer;
 
-beforeAll(async () => {
+beforeEach(async () => {
 	mongoServer = await startTestDatabase();
 });
 
-afterAll(async () => {
+afterEach(async () => {
 	await stopTestDatabase(mongoServer);
 });
 it('should return error if contain empty comment', async() => {

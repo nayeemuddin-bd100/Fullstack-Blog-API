@@ -13,11 +13,11 @@ jest.setTimeout(60000);
 jest.useRealTimers();
 
 
-beforeAll(async () => {
+beforeEach(async () => {
 	mongoServer = await startTestDatabase();
 });
 
-afterAll(async () => {
+afterEach(async () => {
 	await stopTestDatabase(mongoServer);
 });
 

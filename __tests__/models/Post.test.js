@@ -9,11 +9,11 @@ const {
 
 let mongoServer
 
-beforeAll(async () => {
+beforeEach(async () => {
     mongoServer = await startTestDatabase();
 })
 
-afterAll(async() => {
+afterEach(async() => {
     await stopTestDatabase(mongoServer);
 });
 
