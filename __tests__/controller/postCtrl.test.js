@@ -13,6 +13,10 @@ const {
 	stopTestDatabase,
 } = require("../../utils/test-db-setup-ctrl");
 
+
+/*=============================================
+=            Testing setup            =
+=============================================*/
 jest.useRealTimers();
 
 let mongoServer;
@@ -25,8 +29,11 @@ afterEach(async () => {
 	await stopTestDatabase(mongoServer);
 });
 
+
+
+
 describe("Post controller", () => {
-	describe("Get- /api/posts", () => {
+	describe("GET- /api/posts", () => {
 
 		it("should return error if the authorization token is invalid or not provided or expired", async () => {
 			try {
