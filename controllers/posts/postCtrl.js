@@ -11,9 +11,15 @@ const validateMongoDbId = require("../../utils/validateMongoDbId");
 =              Create Post API          =
 =============================================*/
 const createPostCtrl = expressAsyncHandler(async (req, res) => {
-	const { filename } = req.file;
-	const localPath = `public/images/posts/${filename}`;
-	const imgUpload = await cloudinaryUpload(localPath);
+	let filename;
+	let localPath;
+	let imgUpload
+	if (req.file) {
+		filename = req?.file?.filename;
+		localPath = `public/images/posts/${filename}`;
+		imgUpload = await cloudinaryUpload(localPath);
+	}
+	
 
 	const { _id } = req.headers.user;
 	validateMongoDbId(_id);
