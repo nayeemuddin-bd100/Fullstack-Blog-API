@@ -63,6 +63,7 @@ describe("Post controller", () => {
 		newPost = JSON.parse(res.text);
 	});
 
+	
 	describe("GET- /api/posts", () => {
 		it("should return error if the authorization token is invalid or not provided or expired", async () => {
 			try {
