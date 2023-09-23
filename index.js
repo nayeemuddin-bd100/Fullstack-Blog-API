@@ -7,6 +7,8 @@ const commentRoute = require('./route/comments/commentRoute')
 const postRoute = require('./route/posts/postRoute')
 const sendEmailRoute = require('./route/sendEmail/sendEmailRoute')
 const userRoutes = require('./route/users/userRoute')
+const cors = require('cors');
+
 
 require('dotenv').config()
 
@@ -15,12 +17,16 @@ require('dotenv').config()
 
 const app = express()
 
+
+
 // DB
 dbConnect()
 
 
 // Middleware
 app.use(express.json())
+// cors
+app.use(cors());
 
 
 // User Route
