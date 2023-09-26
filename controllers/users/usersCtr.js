@@ -54,6 +54,7 @@ const userLoginCtrl = asyncHandler(async (req, res) => {
       firstName: user?.firstName,
       lastName: user?.lastName,
       email: user?.email,
+      isAdmin:user?.isAdmin,
       profilePhoto: user?.profilePhoto,
       token: generateToken(user?._id, user?.firstName),
     });
