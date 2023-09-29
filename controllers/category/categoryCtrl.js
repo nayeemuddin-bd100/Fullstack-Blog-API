@@ -27,8 +27,9 @@ const createCategoryCtrl = expressAsyncHandler(async (req, res) => {
 =============================================*/
 
 const fetchAllCategoryCtrl = expressAsyncHandler(async (req, res) => {
+
 	try {
-		const category = await Category.find({});
+		const category = await Category.find({}).populate("user");
 		res.json(category);
 	} catch (error) {
 		res.json(error)
