@@ -17,7 +17,7 @@ const postRoute = express.Router()
 postRoute.post('/', authMiddleware, photoUpload, postsImgResize, createPostCtrl)
 
 // Get All Post
-postRoute.get("/", authMiddleware, fetchPostsCtrl); //api/posts
+postRoute.get("/", fetchPostsCtrl); //api/posts
 
 // Get single Post
 postRoute.get("/:postId", fetchSinglePostCtrl);
