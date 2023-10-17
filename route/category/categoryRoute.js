@@ -15,7 +15,7 @@ const categoryRoute = express.Router()
 categoryRoute.post("/", authMiddleware, createCategoryCtrl);
 
 //fetch all category
-categoryRoute.get("/", authMiddleware, fetchAllCategoryCtrl);
+categoryRoute.get("/", fetchAllCategoryCtrl);
 
 //fetch single category
 categoryRoute.get("/:categoryId", authMiddleware, fetchSingleCategoryCtrl);
