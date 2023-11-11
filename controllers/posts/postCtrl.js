@@ -53,9 +53,15 @@ const createPostCtrl = expressAsyncHandler(async (req, res) => {
 =============================================*/
 
 const fetchPostsCtrl = expressAsyncHandler(async(req, res) => {
+	const category = req?.query?.category
 	try {
-		const post = await Post.find({}).populate("author");
-		res.json(post);
+		if (category) {
+			const post = await Post.find({ category }).populate("author");
+			res.json(post);
+		} else {
+			const post = await Post.find({ }).populate("author");
+			res.json(post);
+		}
 	} catch (error) {
 		res.json(error);
 	}
@@ -118,8 +124,8 @@ const deletePostCtrl = expressAsyncHandler(async (req, res) => {
 	validateMongoDbId(postId)
 
 	try {
-		await Post.findByIdAndDelete(postId)
-		res.json('Post deleted successfully')
+		const deletedPost  = await Post.findByIdAndDelete(postId)
+		res.json(deletedPost)
 	} catch (error) {
 		res.json(error);
 	}
