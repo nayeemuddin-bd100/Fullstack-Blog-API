@@ -1,5 +1,6 @@
 const expressAsyncHandler = require("express-async-handler");
 const Comment = require("../../model/comment/Comment");
+const Post = require("../../model/post/Post");
 const validateMongoDbId = require("../../utils/validateMongoDbId");
 
 
@@ -16,6 +17,12 @@ const createCommentCtrl = expressAsyncHandler(async (req, res) => {
 			author: user,
 			description,
 		})
+		await comment.save()
+		
+		const post = await Post.findById(postId);
+		post.comments.push(comment._id);
+		await post.save();
+
 		res.json(comment);
 	} catch (error) {
 		res.json(error);

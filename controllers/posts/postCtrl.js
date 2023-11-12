@@ -78,7 +78,8 @@ const fetchSinglePostCtrl = expressAsyncHandler(async (req, res) => {
 		const post = await Post.findById(postId)
 			.populate("author")
 			.populate("likes")
-			.populate("disLikes");
+			.populate("disLikes")
+			.populate("comments");
 
 		// Update number of views
 
