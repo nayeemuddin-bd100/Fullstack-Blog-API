@@ -11,7 +11,6 @@ const postSchema = new mongoose.Schema(
 		category: {
 			type: String,
 			required: [true, "Post category is required"],
-
 		},
 		isLiked: {
 			type: Boolean,
@@ -35,6 +34,12 @@ const postSchema = new mongoose.Schema(
 			{
 				type: mongoose.Schema.Types.ObjectId,
 				ref: "User",
+			},
+		],
+		comments: [
+			{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Comment"
 			},
 		],
 		author: {
