@@ -42,7 +42,7 @@ userRoutes.get("/", authMiddleware, fetchUsersCtrl);
 userRoutes.delete("/:id", deleteUserCtrl);
 userRoutes.get("/:id", userDetailsCtrl);
 userRoutes.get("/profile/:id", authMiddleware, userProfileCtrl);
-userRoutes.put("/update-user-info/:id", authMiddleware, updateUserCtrl);
+userRoutes.put("/update-user-info", authMiddleware, updateUserCtrl);
 
 /*=====  password Management  ======*/
 
