@@ -194,13 +194,14 @@ const followUserCtrl = asyncHandler(async (req, res) => {
   if (alreadyFollowing) throw new Error("You have already follow the user");
 
   await User.findByIdAndUpdate(
-    followId,
-    {
-      $push: { followers: loginId },
-      isFollowing: true,
-    },
-    { new: true }
-  );
+		followId,
+		{
+			$push: { followers: loginId },
+			isFollowing: true,
+			isUnFollowing: false,
+		},
+		{ new: true }
+	);
   await User.findByIdAndUpdate(
     loginId,
     {
@@ -222,13 +223,14 @@ const unfollowUserCtrl = asyncHandler(async (req, res) => {
   const loginUserId = req?.headers?.user?.id;
 
   await User.findByIdAndUpdate(
-    unFollowId,
-    {
-      $pull: { followers: loginUserId },
-      isFollowing: false,
-    },
-    { new: true }
-  );
+		unFollowId,
+		{
+			$pull: { followers: loginUserId },
+			isFollowing: false,
+			isUnFollowing: true,
+		},
+		{ new: true }
+	);
 
   await User.findByIdAndUpdate(
     loginUserId,
