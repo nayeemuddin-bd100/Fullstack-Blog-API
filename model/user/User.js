@@ -166,6 +166,12 @@ userSchema.methods.forgetPasswordToken = async function () {
 // compile schema into model=
 const User = mongoose.model("User", userSchema);
 
+//Account Type
+userSchema.virtual("accountType").get(function () {
+  const totalFollowers = this.followers?.length;
+  return totalFollowers >= 2 ? "Pro Account" : "Starter Account";
+});
+
 module.exports = User;
 
 /**
