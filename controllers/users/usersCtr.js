@@ -116,14 +116,14 @@ const userProfileCtrl = asyncHandler(async (req, res) => {
 	validateMongoDbId(id);
 
 	try {
-		const user = await User.findById(id).populate("posts");
+		const user = await User.findById(id).populate("posts").populate("viewedBy");
 		if (!user) {
 			res.status(404).json({ error: "User not found" });
 			return;
 		}
 
 		const alreadyViewed = user?.viewedBy?.find((viewedUser) => {
-			return viewedUser.toString() === loggedInUser.toString();
+			return viewedUser._id.toString() === loggedInUser.toString();
 		});
 
 		if (loggedInUser.toString() === id || alreadyViewed) {
@@ -133,7 +133,7 @@ const userProfileCtrl = asyncHandler(async (req, res) => {
 				{ _id: id },
 				{ $push: { viewedBy: loggedInUser } },
 				{ new: true }
-			);
+			).populate("viewedBy");
 			res.json(profile);
 		}
 	} catch (error) {
