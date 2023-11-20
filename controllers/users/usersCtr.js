@@ -112,11 +112,30 @@ const userDetailsCtrl = asyncHandler(async (req, res) => {
 
 const userProfileCtrl = asyncHandler(async (req, res) => {
 	const { id } = req.params;
+	const loggedInUser = req?.headers?.user?._id;
 	validateMongoDbId(id);
 
 	try {
 		const user = await User.findById(id).populate("posts");
-		res.json(user);
+		if (!user) {
+			res.status(404).json({ error: "User not found" });
+			return;
+		}
+
+		const alreadyViewed = user?.viewedBy?.find((viewedUser) => {
+			return viewedUser.toString() === loggedInUser.toString();
+		});
+
+		if (loggedInUser.toString() === id || alreadyViewed) {
+			res.json(user);
+		} else {
+			const profile = await User.findOneAndUpdate(
+				{ _id: id },
+				{ $push: { viewedBy: loggedInUser } },
+				{ new: true }
+			);
+			res.json(profile);
+		}
 	} catch (error) {
 		res.json(error);
 	}
@@ -289,7 +308,7 @@ const generateVerificationTokenCtrl = asyncHandler(async (req, res) => {
 
 	try {
 		const accountVerificationToken =
-		await user.createAccountVerificationToken();
+			await user.createAccountVerificationToken();
 		await user.save();
 
 		const restUrl = `<strong>Please verify your account, The link will be expired after 10 minutes <br/> </br> <a href="http://127.0.0.1:5173/verify-token/${accountVerificationToken}"> Click Here </a>  </strong> `;
