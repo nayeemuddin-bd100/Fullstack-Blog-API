@@ -175,13 +175,22 @@ const updateUserCtrl = asyncHandler(async (req, res) => {
 
 const updatePasswordCtrl = asyncHandler(async (req, res) => {
 	const { id } = req?.headers?.user;
-	const { password } = req?.body;
+	const { oldPassword, newPassword } = req.body;
 	validateMongoDbId(id);
 
 	const user = await User.findById(id);
 
-	if (password) {
-		user.password = password;
+	if (!user) {
+		throw new Error(`User does not exist`);
+	}
+
+	const passwordMatched = await user.isPasswordMatched(oldPassword);
+		if (!passwordMatched) {
+			return res.json("Old Password does not matched");
+		}
+
+	if (passwordMatched) {
+		user.password = newPassword;
 		const updatedUser = await user.save();
 
 		res.json(updatedUser);
@@ -189,6 +198,8 @@ const updatePasswordCtrl = asyncHandler(async (req, res) => {
 
 	return res.json(user);
 });
+
+
 
 /*=============================================
 =            Follow User             =
@@ -311,7 +322,7 @@ const generateVerificationTokenCtrl = asyncHandler(async (req, res) => {
 			await user.createAccountVerificationToken();
 		await user.save();
 
-		const restUrl = `<strong>Please verify your account, The link will be expired after 10 minutes <br/> </br> <a href="http://127.0.0.1:5173/verify-token/${accountVerificationToken}"> Click Here </a>  </strong> `;
+		const restUrl = `<strong>Please verify your account, The link will be expired after 10 minutes <br/> </br> <a href="${process.env.CLIENT_DOMAIN}/verify-token/${accountVerificationToken}> Click Here </a>  </strong> `;
 		const msg = {
 			to: user?.email,
 			from: "ctgnayeem0@gmail.com", // Use the email address or domain you verified above
@@ -360,11 +371,15 @@ const forgetPasswordTokenCtrl = asyncHandler(async (req, res) => {
 	const { email } = req?.body;
 	const user = await User.findOne({ email });
 
+	if (!user) {
+		throw new Error('User not found')
+	}
+
 	try {
 		const accountVerificationToken = await user.forgetPasswordToken();
 		await user.save();
 
-		const restUrl = `<strong> To reset your password , please verify your account first. The link will be expired after 10 minutes <br/> </br> <a href="http://localhost:3000/verify-account/${accountVerificationToken}"> Click Here </a>  </strong> `;
+		const restUrl = `<strong> To reset your password , please verify your account first. The link will be expired after 10 minutes <br/> </br> <a href="${process.env.CLIENT_DOMAIN}/set-new-pass/${accountVerificationToken}"> Click Here </a>  </strong> `;
 
 		const msg = {
 			to: email,
@@ -374,9 +389,7 @@ const forgetPasswordTokenCtrl = asyncHandler(async (req, res) => {
 		};
 
 		await sgMail.send(msg);
-		res.json(
-			`Please check your email address . A verification message is successfully sent your email address. your token is ${accountVerificationToken}`
-		);
+		res.json(restUrl);
 	} catch (error) {
 		res.json(error);
 	}
@@ -406,7 +419,7 @@ const restPasswordCtrl = asyncHandler(async (req, res) => {
 	user.passwordResetExpires = undefined;
 	await user.save();
 
-	res.json("Password Change Successfully");
+	res.json(user);
 });
 
 /*=============================================
