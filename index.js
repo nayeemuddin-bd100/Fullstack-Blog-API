@@ -22,11 +22,11 @@ const app = express()
 // DB
 dbConnect()
 
-
-// Middleware
-app.use(express.json())
 // cors
 app.use(cors());
+// Middleware
+app.use(express.json())
+
 
 
 // User Route
