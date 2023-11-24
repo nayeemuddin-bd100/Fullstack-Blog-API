@@ -46,10 +46,9 @@ userRoutes.put("/update-user-info", authMiddleware, updateUserCtrl);
 
 /*=====  password Management  ======*/
 
-userRoutes.put("/updatePassword/:id", authMiddleware, updatePasswordCtrl);
+userRoutes.put("/update-password", authMiddleware, updatePasswordCtrl);
 userRoutes.put(
 	"/forget-password-token",
-	authMiddleware,
 	forgetPasswordTokenCtrl
 );
 userRoutes.put("/reset-password", restPasswordCtrl);
