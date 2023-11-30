@@ -7,17 +7,14 @@ const commentRoute = require('./route/comments/commentRoute')
 const postRoute = require('./route/posts/postRoute')
 const sendEmailRoute = require('./route/sendEmail/sendEmailRoute')
 const userRoutes = require('./route/users/userRoute')
+const swaggerUi = require('swagger-ui-express');
+// import YAML from 'yamljs';
+const swaggerDocument = require('./swagger.json');
 const cors = require('cors');
 
 
 require('dotenv').config()
-
-
-
-
 const app = express()
-
-
 
 // DB
 dbConnect()
@@ -26,9 +23,6 @@ dbConnect()
 app.use(cors());
 // Middleware
 app.use(express.json())
-
-
-
 // User Route
 app.use("/api/users", userRoutes);
 
@@ -53,7 +47,8 @@ app.get('/', (req, res) => {
     res.send('hello world')
 })
 
-
+// Swagger Api docs
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Error Handler
 app.use(notFound)
