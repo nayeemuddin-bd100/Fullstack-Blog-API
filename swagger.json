@@ -1,0 +1,821 @@
+{
+	"openapi": "3.0.2",
+	"info": {
+		"description": "This is wordCrafters full stack blog API documentation",
+		"version": "1.0.0",
+		"title": "wordCrafters Full Stack Blog API"
+	},
+	"tags": [
+		{
+			"name": "localUser",
+			"description": "User Management"
+		},
+		{
+			"name": "Posts",
+			"description": "Author posts Management"
+		},
+		{
+			"name": "Category",
+			"description": "Post Category Management"
+		},
+		{
+			"name": "Comment",
+			"description": "User Comment Management"
+		},
+		{
+			"name": "Send Email",
+			"description": "Send Email to user using sendgrid"
+		}
+	],
+	"security": [
+		{
+			"bearerAuth": []
+		}
+	],
+
+	"paths": {
+		"/api/users/register": {
+			"post": {
+				"tags": ["localUser"],
+				"summary": "Register a new user",
+				"requestBody": {
+					"description": "Created user object",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/localUser"
+							}
+						}
+					}
+				},
+				"responses": {
+					"default": {
+						"description": "User register in successfully"
+					}
+				}
+			}
+		},
+		"/api/users/login": {
+			"post": {
+				"tags": ["localUser"],
+				"summary": "Logs user into the system",
+				"description": "",
+				"requestBody": {
+					"description": "Created user object",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string",
+										"example": "john@email.com",
+										"required": true
+									},
+									"password": {
+										"type": "string",
+										"example": "12345",
+										"required": true
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "successful operation"
+					},
+					"400": {
+						"description": "Invalid username/password supplied"
+					},
+					"500": {
+						"description": "Internal server error"
+					}
+				}
+			}
+		},
+
+		"/api/users/": {
+			"get": {
+				"tags": ["localUser"],
+				"summary": "Get All Users",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Fetched All users successfully"
+					}
+				}
+			}
+		},
+		"/api/users/{id}": {
+			"get": {
+				"tags": ["localUser"],
+				"summary": "Get user details by ID",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "User ID",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "User details retrieved successfully"
+					}
+				}
+			},
+			"delete": {
+				"tags": ["localUser"],
+				"summary": "Delete user by ID",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "User ID",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "User delete successfully"
+					}
+				}
+			}
+		},
+		"/api/users/profile/{id}": {
+			"get": {
+				"tags": ["localUser"],
+				"summary": "Get user profile by ID",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "User ID",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "User details retrieved successfully"
+					}
+				}
+			}
+		},
+
+		"/api/users/update-user-info/": {
+			"put": {
+				"tags": ["localUser"],
+				"summary": "Update user information",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"description": "Update user object",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"firstName": {
+										"type": "string",
+										"description": "Updated first name"
+									},
+									"lastName": {
+										"type": "string",
+										"description": "Updated last name"
+									},
+									"email": {
+										"type": "string",
+										"description": "Updated email address"
+									},
+									"bio": {
+										"type": "string",
+										"description": "Updated user bio"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "User information updated successfully"
+					}
+				}
+			}
+		},
+		"/api/users/update-password": {
+			"put": {
+				"tags": ["localUser"],
+				"summary": "Update user password",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"description": "Update password",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"oldPassword": {
+										"type": "string",
+										"required": true
+									},
+									"newPassword": {
+										"type": "string",
+										"example": "12345",
+										"required": true
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "User password updated successfully"
+					}
+				}
+			}
+		},
+		"/api/users/forget-password-token": {
+			"put": {
+				"tags": ["localUser"],
+				"summary": "Generate forget password token",
+				"requestBody": {
+					"description": "User email",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"email": {
+										"type": "string",
+										"example": "john@email.com",
+										"required": true
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Forget password token generated successfully"
+					}
+				}
+			}
+		},
+		"/api/users/reset-password": {
+			"put": {
+				"tags": ["localUser"],
+				"summary": "Reset user password",
+				"requestBody": {
+					"description": "User Reset password ",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"token": {
+										"type": "string",
+										"required": true
+									},
+									"password": {
+										"type": "string",
+										"example": "12345",
+										"required": true
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "User password reset successfully"
+					}
+				}
+			}
+		},
+
+		"/api/users/generate-verify-email-token": {
+			"post": {
+				"tags": ["localUser"],
+				"summary": "Generate verification token for email",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Verification token generated successfully"
+					}
+				}
+			}
+		},
+		"/api/users/verify-account": {
+			"put": {
+				"tags": ["localUser"],
+				"summary": "Verify user's account",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"description": "Created user object",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"token": {
+										"type": "string",
+										"required": true
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "User account verified successfully"
+					}
+				}
+			}
+		},
+		"/api/users/follow": {
+			"put": {
+				"tags": ["localUser"],
+				"summary": "Follow another user",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"description": "Follow user ID",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"followId": {
+										"type": "string",
+										"required": true
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "User followed successfully"
+					}
+				}
+			}
+		},
+		"/api/users/unfollow": {
+			"put": {
+				"tags": ["localUser"],
+				"summary": "Unfollow user",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"description": "Unfollow user ID",
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"unFollowId": {
+										"type": "string",
+										"required": true
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "User unfollowed successfully"
+					}
+				}
+			}
+		},
+		"/api/users/block-user/{id}": {
+			"put": {
+				"tags": ["localUser"],
+				"summary": "Block another user",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "User ID",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "User blocked successfully"
+					}
+				}
+			}
+		},
+		"/api/users/unblock-user/{id}": {
+			"put": {
+				"tags": ["localUser"],
+				"summary": "Unblock another user",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"required": true,
+						"description": "User ID",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "User unblocked successfully"
+					}
+				}
+			}
+		},
+		"/api/users/profile-photo-upload": {
+			"put": {
+				"tags": ["localUser"],
+				"summary": "Upload user profile photo",
+				"security": [
+					{
+						"bearerAuth": []
+					}
+				],
+				"requestBody": {
+					"description": "Profile photo object",
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								
+								"properties": {
+									"image": {
+										"type": "string",
+										"format": "binary"
+									}
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Profile photo uploaded successfully"
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"localUser": {
+				"type": "object",
+				"properties": {
+					"firstName": {
+						"type": "string",
+						"example": "John"
+					},
+					"lastName": {
+						"type": "string",
+						"example": "James"
+					},
+					"email": {
+						"type": "string",
+						"example": "john@email.com"
+					},
+					"password": {
+						"type": "string",
+						"example": "12345"
+					}
+				}
+			},
+			"Order": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer",
+						"format": "int64",
+						"example": 10
+					},
+					"petId": {
+						"type": "integer",
+						"format": "int64",
+						"example": 198772
+					},
+					"quantity": {
+						"type": "integer",
+						"format": "int32",
+						"example": 7
+					},
+					"shipDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"status": {
+						"type": "string",
+						"description": "Order Status",
+						"example": "approved",
+						"enum": ["placed", "approved", "delivered"]
+					},
+					"complete": {
+						"type": "boolean"
+					}
+				},
+				"xml": {
+					"name": "order"
+				}
+			},
+			"Customer": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer",
+						"format": "int64",
+						"example": 100000
+					},
+					"username": {
+						"type": "string",
+						"example": "fehguy"
+					},
+					"address": {
+						"type": "array",
+						"xml": {
+							"name": "addresses",
+							"wrapped": true
+						},
+						"items": {
+							"$ref": "#/components/schemas/Address"
+						}
+					}
+				},
+				"xml": {
+					"name": "customer"
+				}
+			},
+			"Address": {
+				"type": "object",
+				"properties": {
+					"street": {
+						"type": "string",
+						"example": "437 Lytton"
+					},
+					"city": {
+						"type": "string",
+						"example": "Palo Alto"
+					},
+					"state": {
+						"type": "string",
+						"example": "CA"
+					},
+					"zip": {
+						"type": "string",
+						"example": "94301"
+					}
+				},
+				"xml": {
+					"name": "address"
+				}
+			},
+			"Category": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer",
+						"format": "int64",
+						"example": 1
+					},
+					"name": {
+						"type": "string",
+						"example": "Dogs"
+					}
+				},
+				"xml": {
+					"name": "category"
+				}
+			},
+			"User": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer",
+						"format": "int64",
+						"example": 10
+					},
+					"username": {
+						"type": "string",
+						"example": "theUser"
+					},
+					"firstName": {
+						"type": "string",
+						"example": "John"
+					},
+					"lastName": {
+						"type": "string",
+						"example": "James"
+					},
+					"email": {
+						"type": "string",
+						"example": "john@email.com"
+					},
+					"password": {
+						"type": "string",
+						"example": "12345"
+					},
+					"phone": {
+						"type": "string",
+						"example": "12345"
+					},
+					"userStatus": {
+						"type": "integer",
+						"description": "User Status",
+						"format": "int32",
+						"example": 1
+					}
+				},
+				"xml": {
+					"name": "user"
+				}
+			},
+			"Tag": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer",
+						"format": "int64"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"xml": {
+					"name": "tag"
+				}
+			},
+			"Pet": {
+				"required": ["name", "photoUrls"],
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "integer",
+						"format": "int64",
+						"example": 10
+					},
+					"name": {
+						"type": "string",
+						"example": "doggie"
+					},
+					"category": {
+						"$ref": "#/components/schemas/Category"
+					},
+					"photoUrls": {
+						"type": "array",
+						"xml": {
+							"wrapped": true
+						},
+						"items": {
+							"type": "string",
+							"xml": {
+								"name": "photoUrl"
+							}
+						}
+					},
+					"tags": {
+						"type": "array",
+						"xml": {
+							"wrapped": true
+						},
+						"items": {
+							"$ref": "#/components/schemas/Tag"
+						}
+					},
+					"status": {
+						"type": "string",
+						"description": "pet status in the store",
+						"enum": ["available", "pending", "sold"]
+					}
+				},
+				"xml": {
+					"name": "pet"
+				}
+			},
+			"ApiResponse": {
+				"type": "object",
+				"properties": {
+					"code": {
+						"type": "integer",
+						"format": "int32"
+					},
+					"type": {
+						"type": "string"
+					},
+					"message": {
+						"type": "string"
+					}
+				},
+				"xml": {
+					"name": "##default"
+				}
+			}
+		},
+		"requestBodies": {
+			"Pet": {
+				"description": "Pet object that needs to be added to the store",
+				"content": {
+					"application/json": {
+						"schema": {
+							"$ref": "#/components/schemas/Pet"
+						}
+					},
+					"application/xml": {
+						"schema": {
+							"$ref": "#/components/schemas/Pet"
+						}
+					}
+				}
+			},
+			"UserArray": {
+				"description": "List of user object",
+				"content": {
+					"application/json": {
+						"schema": {
+							"type": "array",
+							"items": {
+								"$ref": "#/components/schemas/User"
+							}
+						}
+					}
+				}
+			}
+		},
+		"securitySchemes": {
+			"bearerAuth": {
+				"type": "http",
+				"scheme": "bearer",
+				"bearerFormat": "JWT"
+			}
+		}
+	}
+}
