@@ -34,14 +34,12 @@ Effortlessly manage users with a comprehensive set of features:
 - **Token Verification with SendGrid:** Verify user accounts using email tokens with SendGrid integration.
 - **Forget, Update, Reset Password:** Streamlined process for password management.
 
-Feel empowered with a complete suite of user management features, ensuring a secure and engaging user experience.
-
 ### 📝 Post Operations:
 
 ### Posts handle:
 
-- **Create Post:** Effortlessly compose and publish new posts.
-- **Edit Post:** Modify the content and details of existing posts.
+- **Create Post:** Compose and publish new posts.
+- **Edit Post:** Modify the content of existing posts.
 - **Delete Post:** Remove posts with a simple click.
 
 ### Retrieve Post Information:
@@ -86,8 +84,6 @@ Feel empowered with a complete suite of user management features, ensuring a sec
 - **Fetch Single Category:** Retrieve detailed information about a specific category.
 
 ## 💻 Technologies Used
-
-Explore the technologies and tools that power this project:
 
 - **Node.js:** Server-side JavaScript runtime
 - **Express:** Web framework for Node.js
