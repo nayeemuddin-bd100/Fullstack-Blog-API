@@ -15,8 +15,9 @@ const cloudinaryUpload = async (fileToUpload) => {
 
     try {
         const data = await cloudinary.uploader.upload(fileToUpload, {
-          resource_type: "auto",
-        });
+					folder: "wordcrafters",
+					resource_type: "auto",
+				});
         return data?.secure_url;
     } catch (error) {
         return error

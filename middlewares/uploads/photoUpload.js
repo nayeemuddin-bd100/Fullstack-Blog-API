@@ -1,7 +1,7 @@
 const multer = require("multer")
 const sharp = require("sharp")
 const path = require("path")
-
+const fsPromises = require("fs").promises;
 
 // Here we are using memorystorage instead of diskstorage since we stored in memory as buffer , it would be helpful for our performance.
 const multerStorage = multer.memoryStorage()
@@ -31,13 +31,14 @@ const profilePhotoResize = async (req, res, next) => {
     if (!req.file) return next();
     
     req.file.filename = `user-${Date.now()}-${req.file.originalname}`;
+    const filePath = path.join(`public/images/profile/${req.file.filename}`);
 
     
     await sharp(req.file.buffer)
-      .resize(250, 250)
-      .toFormat("jpeg")
-      .jpeg({ quality: 90 })
-      .toFile(path.join(`public/images/profile/${req.file.filename}`))    
+			.resize(250, 250)
+			.toFormat("jpeg")
+			.jpeg({ quality: 90 })
+			.toFile(filePath);   
     next()
 
 }
@@ -46,16 +47,23 @@ const profilePhotoResize = async (req, res, next) => {
 const postsImgResize = async (req, res, next) => {
     // check there is no file
     if (!req.file) return next();
-    
     req.file.filename = `user-${Date.now()}-${req.file.originalname}`;
+		const filePath = path.join(`public/images/posts/${req.file.filename}`);
 
-    
+		try {
+			await fsPromises.mkdir(path.dirname(filePath), { recursive: true });
+		} catch (error) {
+			return next(error);
+		}
+
+   
     await sharp(req.file.buffer)
-      .resize(500, 500)
-      .toFormat("jpeg")
-      .jpeg({ quality: 90 })
-      .toFile(path.join(`public/images/posts/${req.file.filename}`))    
+			.resize(500, 500)
+			.toFormat("jpeg")
+			.jpeg({ quality: 90 })
+			.toFile(filePath); 
     next()
+   
 
 }
 
