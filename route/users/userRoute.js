@@ -39,7 +39,7 @@ userRoutes.put("/verify-account", authMiddleware, accountVerificationCtrl);
 /*=====  User Account Management ======*/
 
 userRoutes.get("/", authMiddleware, fetchUsersCtrl);
-userRoutes.delete("/:id", deleteUserCtrl);
+userRoutes.delete("/:id",authMiddleware, deleteUserCtrl);
 userRoutes.get("/:id", userDetailsCtrl);
 userRoutes.get("/profile/:id", authMiddleware, userProfileCtrl);
 userRoutes.put("/update-user-info", authMiddleware, updateUserCtrl);

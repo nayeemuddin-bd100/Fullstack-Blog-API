@@ -80,12 +80,21 @@ const fetchUsersCtrl = asyncHandler(async (req, res) => {
 =============================================*/
 const deleteUserCtrl = asyncHandler(async (req, res) => {
 	const id = req.params.id;
+	const loggedInUserId = req?.headers?.user?._id;
 
 	validateMongoDbId(id);
 
 	try {
-		const user = await User.deleteOne({ id });
-		res.json("User Deleted Successfully");
+		const author = await User.findById(id);
+		const loggedInUser = await User.findById(loggedInUserId);
+
+
+		if (!loggedInUser?.isAdmin) {
+			throw new Error("Only Admin can delete this user");
+		} else {
+			await User.deleteOne({ _id: author?._id });
+			res.json(user);
+		}
 	} catch (error) {
 		res.json("Error Deleting user");
 	}
@@ -146,6 +155,7 @@ const userProfileCtrl = asyncHandler(async (req, res) => {
 =============================================*/
 const updateUserCtrl = asyncHandler(async (req, res) => {
 	const { _id } = req?.headers?.user;
+	console.log("update user",_id);
 	validateMongoDbId(_id);
 
 	try {
@@ -185,9 +195,9 @@ const updatePasswordCtrl = asyncHandler(async (req, res) => {
 	}
 
 	const passwordMatched = await user.isPasswordMatched(oldPassword);
-		if (!passwordMatched) {
-			return res.json("Old Password does not matched");
-		}
+	if (!passwordMatched) {
+		return res.json("Old Password does not matched");
+	}
 
 	if (passwordMatched) {
 		user.password = newPassword;
@@ -198,8 +208,6 @@ const updatePasswordCtrl = asyncHandler(async (req, res) => {
 
 	return res.json(user);
 });
-
-
 
 /*=============================================
 =            Follow User             =
@@ -372,7 +380,7 @@ const forgetPasswordTokenCtrl = asyncHandler(async (req, res) => {
 	const user = await User.findOne({ email });
 
 	if (!user) {
-		throw new Error('User not found')
+		throw new Error("User not found");
 	}
 
 	try {
