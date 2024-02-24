@@ -58,6 +58,7 @@ const userLoginCtrl = asyncHandler(async (req, res) => {
 			profilePhoto: user?.profilePhoto,
 			token: generateToken(user?._id, user?.firstName),
 			isVerified: user?.isAccountVerified,
+			blockedUsers: user?.blockedUsers,
 		});
 	}
 });
@@ -87,7 +88,6 @@ const deleteUserCtrl = asyncHandler(async (req, res) => {
 	try {
 		const author = await User.findById(id);
 		const loggedInUser = await User.findById(loggedInUserId);
-
 
 		if (!loggedInUser?.isAdmin) {
 			throw new Error("Only Admin can delete this user");
@@ -155,7 +155,6 @@ const userProfileCtrl = asyncHandler(async (req, res) => {
 =============================================*/
 const updateUserCtrl = asyncHandler(async (req, res) => {
 	const { _id } = req?.headers?.user;
-	console.log("update user",_id);
 	validateMongoDbId(_id);
 
 	try {
@@ -279,18 +278,15 @@ const unfollowUserCtrl = asyncHandler(async (req, res) => {
 =============================================*/
 const blockUserCtrl = asyncHandler(async (req, res) => {
 	const { id } = req?.params;
+	const loggedInUserId = req?.headers?.user?._id;
 	validateMongoDbId(id);
 
 	try {
-		const user = await User.findByIdAndUpdate(
-			id,
-			{
-				isBlocked: true,
-			},
-			{ new: true }
-		);
-
-		res.json(user);
+		const blockedUsers = await User.findOne({ _id: id });
+		 await User.findByIdAndUpdate(loggedInUserId, {
+			$push: { blockedUsers: id },
+		});
+		res.json(blockedUsers);
 	} catch (error) {
 		res.json(error);
 	}
@@ -301,18 +297,16 @@ const blockUserCtrl = asyncHandler(async (req, res) => {
 =============================================*/
 const unBlockUserCtrl = asyncHandler(async (req, res) => {
 	const { id } = req?.params;
+	const loggedInUserId = req?.headers?.user?._id;
 	validateMongoDbId(id);
 
 	try {
-		const user = await User.findByIdAndUpdate(
-			id,
-			{
-				isBlocked: false,
-			},
-			{ new: true }
-		);
+		const unBlockedUser = await User.findOne({ _id: id });
+		await User.findByIdAndUpdate(loggedInUserId, {
+			$pull: { blockedUsers: id },
+		});
 
-		res.json(user);
+		res.json(unBlockedUser);
 	} catch (error) {
 		res.json(error);
 	}
