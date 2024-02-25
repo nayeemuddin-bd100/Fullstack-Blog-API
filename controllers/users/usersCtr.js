@@ -324,7 +324,7 @@ const generateVerificationTokenCtrl = asyncHandler(async (req, res) => {
 			await user.createAccountVerificationToken();
 		await user.save();
 
-		const restUrl = `<strong>Please verify your account, The link will be expired after 10 minutes <br/> </br> <a href="${process.env.CLIENT_DOMAIN}/verify-token/${accountVerificationToken}> Click Here </a>  </strong> `;
+		const restUrl = `<strong>Please verify your account, The link will be expired after 10 minutes <br/> </br> <a href="${process.env.CLIENT_DOMAIN}/verify-token/${accountVerificationToken}"> Click Here </a>  </strong> `;
 		const msg = {
 			to: user?.email,
 			from: "ctgnayeem0@gmail.com", // Use the email address or domain you verified above
