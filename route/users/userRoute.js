@@ -41,7 +41,7 @@ userRoutes.put("/verify-account", authMiddleware, accountVerificationCtrl);
 userRoutes.get("/", fetchUsersCtrl);
 userRoutes.delete("/:id",authMiddleware, deleteUserCtrl);
 userRoutes.get("/:id", userDetailsCtrl);
-userRoutes.get("/profile/:id", userProfileCtrl);
+userRoutes.get("/profile/:id", authMiddleware, userProfileCtrl);
 userRoutes.put("/update-user-info", authMiddleware, updateUserCtrl);
 
 /*=====  password Management  ======*/
