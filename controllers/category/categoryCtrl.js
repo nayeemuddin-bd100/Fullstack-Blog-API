@@ -1,6 +1,7 @@
 const expressAsyncHandler = require("express-async-handler");
 const Category = require("../../model/category/Category");
 const validateMongoDbId = require("../../utils/validateMongoDbId");
+const Post = require("../../model/post/Post");
 
 
 /*=============================================
@@ -35,6 +36,33 @@ const fetchAllCategoryCtrl = expressAsyncHandler(async (req, res) => {
 		res.json(error)
 	}
 })
+
+
+// const fetchAllCategoryCtrl = expressAsyncHandler(async (req, res) => {
+//   try {
+//     const categories = await Category.aggregate([
+//       {
+//         $lookup: {
+//           from: "Post", // Replace 'posts' with the name of your Post model's collection
+//           localField: '_id',
+//           foreignField: 'category',
+//           as: 'posts'
+//         }
+//       },
+//       {
+//         $project: {
+//           _id: 1,
+//           title: 1,
+//           totalPost: { $size: '$posts' }
+//         }
+//       }
+//     ]);
+
+//     res.json(categories);
+//   } catch (error) {
+//     res.json(error);
+//   }
+// });
 
 /*=============================================
 =              Fetch single category         =
