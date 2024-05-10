@@ -58,16 +58,65 @@ const createPostCtrl = expressAsyncHandler(async (req, res) => {
 =           Fetch All Post            =
 =============================================*/
 
+// const fetchPostsCtrl = expressAsyncHandler(async (req, res) => {
+//   const category = req?.query?.category;
+//   try {
+//     if (category) {
+//       const post = await Post.find({ category }).populate("author");
+//       res.json(post);
+//     } else {
+//       const post = await Post.find({}).populate("author");
+//       res.json(post);
+//     }
+//   } catch (error) {
+//     res.json(error);
+//   }
+// });
+
 const fetchPostsCtrl = expressAsyncHandler(async (req, res) => {
   const category = req?.query?.category;
+  const {
+    page = 1,
+    limit = 5,
+    sortBy = "createdAt",
+    sortOrder = "desc",
+  } = req.query;
+
+  // ?page=2&limit=20&sortBy=title&sortOrder=asc
+  // http://localhost:5000/api/posts?page=3&limit=5&sortBy=createdAt&sortOrder=desc&category=Next
+
   try {
+    let posts;
+    let total;
+
     if (category) {
-      const post = await Post.find({ category }).populate("author");
-      res.json(post);
+      const categoryCondition = { category };
+      total = await Post.countDocuments(categoryCondition);
+      posts = await Post.find(categoryCondition)
+        .populate("author")
+        .sort({ [sortBy]: sortOrder === "desc" ? -1 : 1 }) // { createdAt: -1 } for descending order and { createdAt: 1 } for ascending order .
+        .skip((page - 1) * limit)
+        // page1: skip 0, limit 5 => (1-1) * 5 = 0 => show first 5 posts
+        // page2: skip 5, limit 5 => (2-1) * 5 = 5 => show next 5 posts and skip first 5 posts
+        // page3: skip 10, limit 5 => (3-1) * 5 = 10 => show next 5 posts and skip first 10 posts
+        .limit(limit);
     } else {
-      const post = await Post.find({}).populate("author");
-      res.json(post);
+      total = await Post.countDocuments();
+      posts = await Post.find({})
+        .populate("author")
+        .sort({ [sortBy]: sortOrder === "desc" ? -1 : 1 })
+        .skip((page - 1) * limit)
+        .limit(limit);
     }
+
+    res.json({
+      meta: {
+        page,
+        limit,
+        total,
+      },
+      data: posts,
+    });
   } catch (error) {
     res.json(error);
   }
@@ -100,7 +149,6 @@ const fetchSinglePostCtrl = expressAsyncHandler(async (req, res) => {
     res.json(error);
   }
 });
-
 
 /*=============================================
 =              Update Post          =
@@ -157,7 +205,7 @@ const deletePostCtrl = expressAsyncHandler(async (req, res) => {
   validateMongoDbId(postId);
 
   try {
-	const post = await Post.findById(postId);
+    const post = await Post.findById(postId);
     const category = await Category.findOne({ title: post.category });
     const deletedPost = await Post.findByIdAndDelete(postId);
     // Decrement the postCount of the corresponding category
