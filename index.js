@@ -44,7 +44,7 @@ app.get('/api/users', (req, res) => {
 })
 
 app.get('/', (req, res) => {
-    res.send('hello world')
+    res.send('hello world, welcome to wordcrafters blog')
 })
 
 // Swagger Api docs
