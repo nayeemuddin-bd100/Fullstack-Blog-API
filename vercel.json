@@ -13,7 +13,7 @@
     }
   ],
   "functions": {
-    "api/post": {
+    "api/posts/**/*.js": {
       "maxDuration": 30
     }
   }
